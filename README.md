@@ -1,9 +1,10 @@
 # ChatClientMaven
  Develop an instant messaging service that uses the client-server model (i.e. Socket Programming). The functionality is to be elicited from the following rubrics.
+ 
 Message exchange between server and client using TCP sockets.
 A threaded server that can serve multiple chatting clients.
 
-build a GUI that allows the user to configure both server and client part of the application (i.e. choosing a client name, IP address to connect to at the client-side, the port number, etc. )
+Build a GUI that allows the user to configure both server and client part of the application (i.e. choosing a client name, IP address to connect to at the client-side, the port number, etc. )
 Messages are encrypted using Caesar cipher. (i.e. key can be hardcoded at this stage)
 
 In addition to the requirements of the B grade,

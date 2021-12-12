@@ -46,17 +46,11 @@ public class SocketClient {
         }
     };
 
-//    @Override
-//    public void run() {
-//        listen();
-//    }
-
     public void listen() {
         while(socket.isConnected()) {
             try {
                 String string = reader.readLine();
                 if(string != null) {
-                    //Decrypt the message
                     CaesarCipher cc = new CaesarCipher();
 
                     String decrypted = cc.decrypt(string,2);
@@ -75,7 +69,6 @@ public class SocketClient {
     public void message(String message) {
         System.out.println(socket);
         System.out.println("SENDING: "+message);
-        //Encrypt the message
         CaesarCipher cc = new CaesarCipher();
         String result = cc.encrypt(message,2);;
         System.out.println("Encrypted:"+result);

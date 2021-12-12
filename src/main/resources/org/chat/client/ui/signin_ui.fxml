@@ -40,5 +40,6 @@
             <Image url="@../../../../../../../../../../Downloads/icons8-customer-100.png" />
          </image>
       </ImageView>
+      <Label fx:id="logError" layoutX="113.0" layoutY="340.0" prefHeight="17.0" prefWidth="227.0" />
    </children>
 </Pane>

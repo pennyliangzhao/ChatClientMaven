@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -25,6 +26,8 @@ public class MainUI extends Application {
     public TextField ip;
     @FXML
     public TextField port;
+    @FXML
+    public Label logError;
 
     public static SocketClient socClient;
     public static String currentUsername;
@@ -71,7 +74,8 @@ public class MainUI extends Application {
             }
         } else {
             loginRes = null;
-            System.out.println("Sorry! Username or password incorrect.");
+            logError.setText("Sorry! Username or password is incorrect.");
+            System.out.println("Login error.");
         }
     }
 }

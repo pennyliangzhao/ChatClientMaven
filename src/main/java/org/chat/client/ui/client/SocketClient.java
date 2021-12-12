@@ -1,13 +1,16 @@
 package org.chat.client.ui.client;
 
 import cipher.CaesarCipher;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import org.chat.client.ui.MainUI;
 
 import java.io.*;
 import java.net.Socket;
 
-public class SocketClient extends Thread {
+public class SocketClient {
     private static TextArea textConsole;
     private TextArea textArea;
     private String serverAddress = "127.0.0.1";
@@ -16,12 +19,13 @@ public class SocketClient extends Thread {
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
-
+    public static String serverResponse = null;
 
     public SocketClient(String ip, int port) throws IOException {
         socket = new Socket(ip, port);
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        clientService.start();
     }
 
     public SocketClient(TextArea textArea, TextField textField) {
@@ -29,10 +33,23 @@ public class SocketClient extends Thread {
        this.textField = new TextField();
     }
 
-    @Override
-    public void run() {
-        listen();
-    }
+    Service clientService = new Service() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<>() {
+                @Override
+                protected Void call() {
+                    listen();
+                    return null;
+                }
+            };
+        }
+    };
+
+//    @Override
+//    public void run() {
+//        listen();
+//    }
 
     public void listen() {
         while(socket.isConnected()) {
@@ -43,6 +60,7 @@ public class SocketClient extends Thread {
                     CaesarCipher cc = new CaesarCipher();
 
                     String decrypted = cc.decrypt(string,2);
+                    MainUI.loginRes = decrypted;
                     System.out.println("Server: "+decrypted);
                     if(textConsole != null) {
                         textConsole.appendText(decrypted+"\n");
@@ -60,7 +78,7 @@ public class SocketClient extends Thread {
         //Encrypt the message
         CaesarCipher cc = new CaesarCipher();
         String result = cc.encrypt(message,2);;
-        System.out.println("Encrypted?"+result);
+        System.out.println("Encrypted:"+result);
         //Message sending thread
         new Thread(()-> writer.println(result)).start();
     }

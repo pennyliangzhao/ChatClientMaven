@@ -1,7 +1,9 @@
+
 package org.chat.client.ui;
 
 import cipher.CaesarCipher;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.chat.client.ui.client.SocketClient;
+
+import static org.chat.client.ui.client.SocketClient.serverResponse;
 
 public class MainUI extends Application {
     private static Stage stage;
@@ -25,6 +29,7 @@ public class MainUI extends Application {
     public static SocketClient socClient;
     public static String currentUsername;
     private CaesarCipher cc;
+    public static volatile String loginRes = null;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -43,20 +48,30 @@ public class MainUI extends Application {
         int portN = Integer.parseInt(port.getText());
 
         cc = new CaesarCipher();
-
-
-
-        socClient = new SocketClient(ipAdr, portN);
-        socClient.start();
-        //This needs to be encrypted
-        String msg = "REG:"+uname+":"+pwd;
-
-        socClient.message(msg);
-
-        //Handles the login
-        //If login is success open the chat window
         currentUsername = uname;
-        ChatroomController chatroomController = new ChatroomController();
-        chatroomController.start(this.stage);
+        socClient = new SocketClient(ipAdr, portN);
+        String msg = "REG:"+uname+":"+CaesarCipher.encrypt(pwd, 2);
+        System.out.println(CaesarCipher.encrypt(pwd, 2));
+        socClient.message(msg);
+        new Thread(() -> {
+            while (loginRes == null) {
+                Thread.onSpinWait();
+            }
+            Platform.runLater(() -> startApp());
+        }).start();
+    }
+
+    private void startApp() {
+        if (loginRes.equals("LOGIN:SUCCESS")) {
+            ChatroomController chatroomController = new ChatroomController();
+            try {
+                chatroomController.start(MainUI.stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            loginRes = null;
+            System.out.println("Sorry! Username or password incorrect.");
+        }
     }
 }
